@@ -1,0 +1,52 @@
+DS BALA JI INTERIOR — PUBLIC WEBSITE + PRIVATE MANAGER PORTAL
+===============================================================
+
+ARCHITECTURE
+1. index.html = PUBLIC customer website.
+2. manager.html = PRIVATE manager login/dashboard.
+3. Customers never see attendance, payments or private manager notes.
+4. Manager dashboard uses Firebase Authentication + Firestore.
+5. GitHub Pages hosts the front end. Firebase provides authentication/database.
+
+IMPORTANT SECURITY
+Do NOT use a simple JavaScript password or localStorage for the real manager account.
+This package uses Firebase Authentication and Firestore so the private records are not merely hidden by a button.
+
+FIREBASE SETUP
+A) Go to Firebase Console: https://console.firebase.google.com/
+B) Create a project, e.g. "ds-bala-ji-interior".
+C) Add a Web App to the project.
+D) Copy the Firebase Web App config.
+E) Open manager.js and replace the values inside firebaseConfig.
+F) In Firebase Authentication -> Sign-in method, enable Email/Password.
+G) Create the manager's user account in Authentication -> Users.
+H) Create Firestore Database.
+I) Open Firestore Rules and paste firestore.rules from this folder.
+J) Deploy the site to GitHub Pages.
+
+DATA STORED
+- workers: worker name, role, phone
+- attendance: date, worker, status
+- payments: date, worker, amount, note
+- managerPrivate/main: manager's private notes
+
+RECOMMENDED NEXT SECURITY STEP
+For a single manager, use the Firebase Authentication user's UID in Firestore rules instead of allowing every authenticated account. This prevents another authenticated account from accessing this business database.
+
+GITHUB PAGES
+1. Create a public GitHub repository.
+2. Upload index.html, manager.html, style.css, manager.css, manager.js and .nojekyll.
+3. Settings -> Pages -> Deploy from branch -> main -> /(root) -> Save.
+4. Your public website will use:
+   https://YOUR-USERNAME.github.io/REPOSITORY/
+5. Manager login will be:
+   https://YOUR-USERNAME.github.io/REPOSITORY/manager.html
+
+CUSTOM DOMAIN
+If the business later buys a domain such as d…interior.in, GitHub Pages can be configured to use the custom domain.
+
+WHATSAPP
+The public website and enquiry form can point customers to the business WhatsApp number. Update the number in the HTML if required.
+
+PHOTOS
+Replace the online inspiration photos with actual DS BALA JI INTERIOR project photos before publishing them as company work.

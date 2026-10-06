@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manager Portal | DS BALA JI INTERIOR</title>
+<link rel="stylesheet" href="manager.css">
+</head>
+<body>
+<div id="loginView" class="login-page">
+  <div class="login-card">
+    <div class="logo">DS <span>BALA JI INTERIOR</span></div>
+    <p class="eyebrow">PRIVATE MANAGER PORTAL</p>
+    <h1>Manager Login</h1>
+    <p class="muted">Only authorized managers can access attendance, worker payments and business records.</p>
+    <form id="loginForm">
+      <label>Email<input id="email" type="email" required placeholder="Manager email"></label>
+      <label>Password<input id="password" type="password" required placeholder="Password"></label>
+      <button type="submit">Login securely</button>
+      <p id="loginError" class="error"></p>
+    </form>
+    <a href="index.html" class="back">← Back to public website</a>
+  </div>
+</div>
+
+<div id="appView" class="app hidden">
+  <aside>
+    <div class="side-logo"><b>DS</b><span>BALA JI<br>INTERIOR</span></div>
+    <button data-tab="dashboard">Dashboard</button>
+    <button data-tab="workers">Workers</button>
+    <button data-tab="attendance">Attendance</button>
+    <button data-tab="payments">Payments</button>
+    <button data-tab="business">Manager Data</button>
+    <button id="logout">Logout</button>
+  </aside>
+  <main>
+    <div class="mobile-top"><b>DS BALA JI INTERIOR</b><button id="logoutMobile">Logout</button></div>
+    <section id="dashboard" class="tab">
+      <div class="page-head"><div><small>PRIVATE AREA</small><h1>Manager Dashboard</h1></div><span id="managerEmail"></span></div>
+      <div class="stats"><div><small>Total Workers</small><b id="workerCount">0</b></div><div><small>Present Today</small><b id="presentCount">0</b></div><div><small>Payments Recorded</small><b id="paymentCount">0</b></div><div><small>Total Paid</small><b id="paidTotal">₹0</b></div></div>
+      <div class="notice"><b>Privacy:</b> This dashboard is private. Customers only see the public website and cannot see worker attendance, salaries/payments or manager data.</div>
+    </section>
+
+    <section id="workers" class="tab hidden">
+      <div class="page-head"><div><small>TEAM</small><h1>Workers</h1></div></div>
+      <form id="workerForm" class="form-card"><h3>Add Worker</h3><div class="row"><label>Name<input id="workerName" required></label><label>Role<input id="workerRole" placeholder="Carpenter / Painter"></label><label>Phone<input id="workerPhone"></label><button>Add Worker</button></div></form>
+      <div id="workersList" class="table-card"></div>
+    </section>
+
+    <section id="attendance" class="tab hidden">
+      <div class="page-head"><div><small>DAILY RECORD</small><h1>Attendance</h1></div></div>
+      <div class="form-card"><div class="row"><label>Date<input id="attDate" type="date"></label><label>Worker<select id="attWorker"></select></label><label>Status<select id="attStatus"><option>Present</option><option>Absent</option><option>Half Day</option></select></label><button id="saveAttendance">Save Attendance</button></div></div>
+      <div id="attendanceList" class="table-card"></div>
+    </section>
+
+    <section id="payments" class="tab hidden">
+      <div class="page-head"><div><small>WORKER PAYMENTS</small><h1>Payment Records</h1></div></div>
+      <div class="form-card"><div class="row"><label>Date<input id="payDate" type="date"></label><label>Worker<select id="payWorker"></select></label><label>Amount (₹)<input id="payAmount" type="number" min="0"></label><label>Note<input id="payNote" placeholder="Weekly payment"></label><button id="savePayment">Save Payment</button></div></div>
+      <div id="paymentsList" class="table-card"></div>
+    </section>
+
+    <section id="business" class="tab hidden">
+      <div class="page-head"><div><small>PRIVATE NOTES</small><h1>Manager Data</h1></div></div>
+      <form id="businessForm" class="form-card business-form"><label>Manager / Business Notes<textarea id="businessNotes" rows="8" placeholder="Project notes, expenses, client follow-ups, supplier notes, etc."></textarea></label><button>Save Private Data</button><p id="businessSaved" class="success"></p></form>
+    </section>
+  </main>
+</div>
+<script type="module" src="manager.js"></script>
+</body></html>
