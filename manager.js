@@ -5,12 +5,13 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, order
 // 1) Replace this object with your Firebase Web App configuration.
 // Firebase Console -> Project settings -> Your apps -> Web app -> Config.
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
+  apiKey: "AIzaSyCf9-h9Pofvtdldbi4ID7q-AELzo19fL7E",
+  authDomain: "ds-bala-ji-interior.firebaseapp.com",
+  projectId: "ds-bala-ji-interior",
+  storageBucket: "ds-bala-ji-interior.firebasestorage.app",
+  messagingSenderId: "564291814619",
+  appId: "1:564291814619:web:ce649d7bdffb63e4e9f8fe",
+  measurementId: "G-V9D8D04SRD"
 };
 
 const app = initializeApp(firebaseConfig);
