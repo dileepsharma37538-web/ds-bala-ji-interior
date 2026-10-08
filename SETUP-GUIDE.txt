@@ -1,52 +1,70 @@
-DS BALA JI INTERIOR — PUBLIC WEBSITE + PRIVATE MANAGER PORTAL
-===============================================================
+DS BALA JI INTERIOR — SERVICES + PROJECTS + GALLERY UPDATE
+============================================================
 
-ARCHITECTURE
-1. index.html = PUBLIC customer website.
-2. manager.html = PRIVATE manager login/dashboard.
-3. Customers never see attendance, payments or private manager notes.
-4. Manager dashboard uses Firebase Authentication + Firestore.
-5. GitHub Pages hosts the front end. Firebase provides authentication/database.
+WHAT WAS ADDED
+1. Manager Portal -> Services & Projects
+   - Furniture & Woodwork
+   - Civil Work
+   - Painting & Finishing
+   - Interior Solutions
+   Manager can add a project inside the correct service, with name, description, multiple photos and videos.
 
-IMPORTANT SECURITY
-Do NOT use a simple JavaScript password or localStorage for the real manager account.
-This package uses Firebase Authentication and Firestore so the private records are not merely hidden by a button.
+2. Manager Portal -> Gallery
+   Manager can separately add general photos/videos with title and description.
 
-FIREBASE SETUP
-A) Go to Firebase Console: https://console.firebase.google.com/
-B) Create a project, e.g. "ds-bala-ji-interior".
-C) Add a Web App to the project.
-D) Copy the Firebase Web App config.
-E) Open manager.js and replace the values inside firebaseConfig.
-F) In Firebase Authentication -> Sign-in method, enable Email/Password.
-G) Create the manager's user account in Authentication -> Users.
-H) Create Firestore Database.
-I) Open Firestore Rules and paste firestore.rules from this folder.
-J) Deploy the site to GitHub Pages.
+3. Public website
+   - Clicking a service card opens that service's projects.
+   - Manager-added project photos/videos appear inside that service.
+   - Manager-added Gallery media appears in the public Gallery.
+   - Customers do not need a login.
 
-DATA STORED
-- workers: worker name, role, phone
-- attendance: date, worker, status
-- payments: date, worker, amount, note
-- managerPrivate/main: manager's private notes
+4. Existing features retained
+   Workers, Attendance, Payments, Manager Private Data and Firebase login remain.
 
-RECOMMENDED NEXT SECURITY STEP
-For a single manager, use the Firebase Authentication user's UID in Firestore rules instead of allowing every authenticated account. This prevents another authenticated account from accessing this business database.
+FIREBASE
+--------
+The supplied manager.js already contains the Firebase Web App config previously provided for the DS BALA JI INTERIOR project.
+
+IMPORTANT: ENABLE FIREBASE STORAGE
+1. Open Firebase Console: https://console.firebase.google.com/
+2. Open project: ds-bala-ji-interior
+3. Open Build -> Storage.
+4. Create/enable the Storage bucket.
+5. If Firebase asks you to select a location, choose the location appropriate for your project (Mumbai/India region if offered and suitable).
+6. Open Storage -> Rules and paste storage.rules from this package.
+7. Publish the rules.
+
+FIRESTORE RULES
+---------------
+Open Firestore -> Rules and replace the rules with firestore.rules from this package, then Publish.
+
+The rules make project/gallery documents publicly readable so the customer website can display them. Writes still require Firebase Authentication.
+
+SECURITY NOTE
+-------------
+For production, the best setup is to replace `request.auth != null` on write rules with the exact Firebase manager UID. This ensures only the manager account can upload/edit/delete.
 
 GITHUB PAGES
-1. Create a public GitHub repository.
-2. Upload index.html, manager.html, style.css, manager.css, manager.js and .nojekyll.
-3. Settings -> Pages -> Deploy from branch -> main -> /(root) -> Save.
-4. Your public website will use:
-   https://YOUR-USERNAME.github.io/REPOSITORY/
-5. Manager login will be:
-   https://YOUR-USERNAME.github.io/REPOSITORY/manager.html
+------------
+Upload the updated files to the same GitHub Pages repository. Keep these files in the repository root:
+index.html
+style.css
+manager.html
+manager.css
+manager.js
+firestore.rules
+storage.rules
+.nojekyll
 
-CUSTOM DOMAIN
-If the business later buys a domain such as d…interior.in, GitHub Pages can be configured to use the custom domain.
+HOW MANAGER ADDS A SERVICE PROJECT
+----------------------------------
+Manager Login -> Services & Projects -> choose the service -> + Add Project.
+Enter project name and description, choose multiple photos/videos, then Save Project.
 
-WHATSAPP
-The public website and enquiry form can point customers to the business WhatsApp number. Update the number in the HTML if required.
+HOW MANAGER ADDS GENERAL GALLERY MEDIA
+---------------------------------------
+Manager Login -> Gallery -> Add Gallery Media -> title/description -> choose photos/videos -> Save to Gallery.
 
-PHOTOS
-Replace the online inspiration photos with actual DS BALA JI INTERIOR project photos before publishing them as company work.
+MEDIA STORAGE
+-------------
+Photos/videos are stored in Firebase Storage. Firestore stores the project/gallery information and media URLs.
