@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, serverTimestamp, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCf9-h9Pofvtdldbi4ID7q-AELzo19fL7E",
@@ -13,10 +12,14 @@ const firebaseConfig = {
   measurementId: "G-V9D8D04SRD"
 };
 
+// FREE MEDIA HOSTING: Cloudinary (Firebase Storage is not used)
+const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME";
+const CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET";
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 const loginView = document.querySelector('#loginView');
 const appView = document.querySelector('#appView');
@@ -37,6 +40,25 @@ const SERVICE_LIST = [
 
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function safeFileName(name){return name.replace(/[^a-zA-Z0-9._-]/g,'_')}
+
+async function uploadToCloudinary(file, folder){
+  if(!auth.currentUser) throw new Error('Manager login required.');
+  if(CLOUDINARY_CLOUD_NAME==='YOUR_CLOUD_NAME' || CLOUDINARY_UPLOAD_PRESET==='YOUR_UNSIGNED_UPLOAD_PRESET'){
+    throw new Error('Cloudinary setup required: add Cloud Name and Upload Preset in manager.js.');
+  }
+  const isImage=file.type.startsWith('image/');
+  const maxBytes=isImage ? 10*1024*1024 : 100*1024*1024;
+  if(file.size>maxBytes) throw new Error(`${file.name} is too large. Max ${isImage?'10 MB for images':'100 MB for videos'}.`);
+  const form=new FormData();
+  form.append('file',file);
+  form.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
+  form.append('folder',`ds-bala-ji-interior/${folder}`);
+  const response=await fetch(CLOUDINARY_UPLOAD_URL,{method:'POST',body:form});
+  const data=await response.json();
+  if(!response.ok || !data.secure_url) throw new Error(data.error?.message || 'Cloudinary upload failed.');
+  return {url:data.secure_url,type:isImage?'image':'video',name:file.name,publicId:data.public_id||'',resourceType:data.resource_type||''};
+}
+
 function toast(message, good=true){const el=document.querySelector('#managerToast');el.textContent=message;el.className='toast '+(good?'show good':'show bad');setTimeout(()=>el.className='toast',3200)}
 
 loginForm.addEventListener('submit', async e => {
@@ -107,13 +129,11 @@ async function saveProject(e){
     for(let i=0;i<files.length;i++){
       const file=files[i];
       if(!file.type.startsWith('image/')&&!file.type.startsWith('video/'))continue;
-      const path=`services/${serviceKey}/${projectId}/${Date.now()}_${i}_${safeFileName(file.name)}`;
-      const storageRef=ref(storage,path);await uploadBytes(storageRef,file);const url=await getDownloadURL(storageRef);
-      newMedia.push({url,path,type:file.type.startsWith('video/')?'video':'image',name:file.name});
+      newMedia.push(await uploadToCloudinary(file,`projects/${serviceKey}/${projectId}`));
     }
     await updateDoc(doc(db,'projects',projectId),{serviceKey,name,description,media:[...oldMedia,...newMedia],updatedAt:serverTimestamp()});
     projectFormReset();await renderProjects();toast(wasEditing?'Project updated.':'Project added.');
-  }catch(err){console.error(err);toast('Could not save project. Check Firebase Storage setup.',false)}
+  }catch(err){console.error(err);toast(err?.message || 'Could not save project.',false)}
   finally{btn.disabled=false;btn.textContent='Save Project'}
 }
 
@@ -131,8 +151,8 @@ async function renderProjects(){
 }
 function projectCard(p){const media=p.media||[];const first=media.find(x=>x.type==='image')||media[0];return `<article class="project-admin-card">${first?`<div class="project-thumb">${first.type==='video'?`<video src="${first.url}" muted controls></video>`:`<img src="${first.url}" alt="${escapeHtml(p.name)}">`}</div>`:'<div class="project-thumb no-media">No media</div>'}<div class="project-admin-body"><h4>${escapeHtml(p.name)}</h4><p>${escapeHtml(p.description||'')}</p><small>${media.length} media file${media.length===1?'':'s'}</small><div class="actions-row"><button data-edit-project="${p.id}">Edit</button><button class="danger" data-del-project="${p.id}">Delete</button></div></div></article>`}
 async function editProject(id){const s=await getDoc(doc(db,'projects',id));if(!s.exists())return;const p=s.data();editingProjectId=id;document.querySelector('#projectFormTitle').textContent='Edit Project';document.querySelector('#projectSaveBtn').textContent='Update Project';document.querySelector('#projectService').value=p.serviceKey;document.querySelector('#projectName').value=p.name||'';document.querySelector('#projectDescription').value=p.description||'';document.querySelector('#projectFiles').value='';document.querySelector('#existingMedia').innerHTML=(p.media||[]).length?`<p class="mini-label">Existing media (new uploads will be added):</p>`+(p.media||[]).map((m,i)=>`<div class="existing-media"><span>${m.type==='video'?'🎥':'📷'} ${escapeHtml(m.name||('Media '+(i+1)))}</span><button type="button" data-remove-media="${i}" data-project="${id}">Remove</button></div>`).join(''):'<p class="mini-label">No existing media.</p>';document.querySelector('#projectForm').scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('[data-remove-media]').forEach(b=>b.onclick=()=>removeProjectMedia(b.dataset.project,Number(b.dataset.removeMedia)))}
-async function removeProjectMedia(projectId,index){const s=await getDoc(doc(db,'projects',projectId));if(!s.exists())return;const media=s.data().media||[];const item=media[index];if(!item)return;if(!confirm('Remove this media from the project?'))return;try{if(item.path)await deleteObject(ref(storage,item.path)).catch(()=>{});media.splice(index,1);await updateDoc(doc(db,'projects',projectId),{media,updatedAt:serverTimestamp()});await editProject(projectId);await renderProjects();toast('Media removed.')}catch(e){toast('Could not remove media.',false)}}
-async function deleteProject(id){const s=await getDoc(doc(db,'projects',id));if(!s.exists())return;if(!confirm('Delete this project and all its photos/videos?'))return;try{for(const m of s.data().media||[]){if(m.path)await deleteObject(ref(storage,m.path)).catch(()=>{})}await deleteDoc(doc(db,'projects',id));if(editingProjectId===id)projectFormReset();await renderProjects();toast('Project deleted.')}catch(e){console.error(e);toast('Could not delete project.',false)}}
+async function removeProjectMedia(projectId,index){const s=await getDoc(doc(db,'projects',projectId));if(!s.exists())return;const media=s.data().media||[];const item=media[index];if(!item)return;if(!confirm('Remove this media from the project?'))return;try{media.splice(index,1);await updateDoc(doc(db,'projects',projectId),{media,updatedAt:serverTimestamp()});await editProject(projectId);await renderProjects();toast('Media removed.')}catch(e){toast('Could not remove media.',false)}}
+async function deleteProject(id){const s=await getDoc(doc(db,'projects',id));if(!s.exists())return;if(!confirm('Delete this project and all its photos/videos?'))return;try{await deleteDoc(doc(db,'projects',id));if(editingProjectId===id)projectFormReset();await renderProjects();toast('Project deleted.')}catch(e){console.error(e);toast('Could not delete project.',false)}}
 
 // GALLERY
 let editingGalleryId=null;
@@ -147,12 +167,12 @@ async function saveGallery(e){
     let id=editingGalleryId, media=[];
     if(id){const s=await getDoc(doc(db,'gallery',id));if(s.exists())media=s.data().media||[];}
     else {const created=await addDoc(collection(db,'gallery'),{title,description,media:[],createdAt:serverTimestamp(),updatedAt:serverTimestamp()});id=created.id;}
-    for(let i=0;i<files.length;i++){const file=files[i];if(!file.type.startsWith('image/')&&!file.type.startsWith('video/'))continue;const path=`gallery/${id}/${Date.now()}_${i}_${safeFileName(file.name)}`;const sr=ref(storage,path);await uploadBytes(sr,file);const url=await getDownloadURL(sr);media.push({url,path,type:file.type.startsWith('video/')?'video':'image',name:file.name});}
+    for(let i=0;i<files.length;i++){const file=files[i];if(!file.type.startsWith('image/')&&!file.type.startsWith('video/'))continue;media.push(await uploadToCloudinary(file,`gallery/${id}`));}
     await updateDoc(doc(db,'gallery',id),{title,description,media,updatedAt:serverTimestamp()});galleryFormReset();await renderGallery();toast(wasEditing?'Gallery updated.':'Added to gallery.');
-  }catch(err){console.error(err);toast('Could not save gallery item. Check Firebase Storage setup.',false)}finally{btn.disabled=false;btn.textContent='Save to Gallery'}
+  }catch(err){console.error(err);toast(err?.message || 'Could not save gallery item.',false)}finally{btn.disabled=false;btn.textContent='Save to Gallery'}
 }
 async function renderGallery(){const snap=await getDocs(collection(db,'gallery'));let rows=[];snap.forEach(d=>rows.push({id:d.id,...d.data()}));rows.sort((a,b)=>String(b.createdAt?.seconds||0).localeCompare(String(a.createdAt?.seconds||0)));const el=document.querySelector('#galleryList');el.innerHTML=rows.length?'<div class="gallery-admin-grid">'+rows.map(galleryCard).join('')+'</div>':'<div class="empty">No gallery media added yet.</div>';el.querySelectorAll('[data-edit-gallery]').forEach(b=>b.onclick=()=>editGallery(b.dataset.editGallery));el.querySelectorAll('[data-del-gallery]').forEach(b=>b.onclick=()=>deleteGallery(b.dataset.delGallery))}
 function galleryCard(g){const media=g.media||[];const first=media[0];return `<article class="project-admin-card">${first?`<div class="project-thumb">${first.type==='video'?`<video src="${first.url}" muted controls></video>`:`<img src="${first.url}" alt="${escapeHtml(g.title||'Gallery')}">`}</div>`:'<div class="project-thumb no-media">No media</div>'}<div class="project-admin-body"><h4>${escapeHtml(g.title||'Untitled')}</h4><p>${escapeHtml(g.description||'')}</p><small>${media.length} media file${media.length===1?'':'s'}</small><div class="actions-row"><button data-edit-gallery="${g.id}">Edit</button><button class="danger" data-del-gallery="${g.id}">Delete</button></div></div></article>`}
 async function editGallery(id){const s=await getDoc(doc(db,'gallery',id));if(!s.exists())return;const g=s.data();editingGalleryId=id;document.querySelector('#galleryFormTitle').textContent='Edit Gallery Item';document.querySelector('#gallerySaveBtn').textContent='Update Gallery';document.querySelector('#galleryTitle').value=g.title||'';document.querySelector('#galleryDescription').value=g.description||'';document.querySelector('#galleryFiles').value='';document.querySelector('#galleryExisting').innerHTML=(g.media||[]).length?`<p class="mini-label">Existing media (new uploads will be added):</p>`+(g.media||[]).map((m,i)=>`<div class="existing-media"><span>${m.type==='video'?'🎥':'📷'} ${escapeHtml(m.name||('Media '+(i+1)))}</span><button type="button" data-remove-gallery-media="${i}" data-gallery="${id}">Remove</button></div>`).join(''):'<p class="mini-label">No existing media.</p>';document.querySelector('#galleryForm').scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('[data-remove-gallery-media]').forEach(b=>b.onclick=()=>removeGalleryMedia(b.dataset.gallery,Number(b.dataset.removeGalleryMedia)))}
-async function removeGalleryMedia(id,index){const s=await getDoc(doc(db,'gallery',id));if(!s.exists())return;const media=s.data().media||[];const item=media[index];if(!item||!confirm('Remove this media?'))return;try{if(item.path)await deleteObject(ref(storage,item.path)).catch(()=>{});media.splice(index,1);await updateDoc(doc(db,'gallery',id),{media,updatedAt:serverTimestamp()});await editGallery(id);await renderGallery();toast('Gallery media removed.')}catch(e){toast('Could not remove media.',false)}}
-async function deleteGallery(id){const s=await getDoc(doc(db,'gallery',id));if(!s.exists())return;if(!confirm('Delete this gallery item and all its photos/videos?'))return;try{for(const m of s.data().media||[]){if(m.path)await deleteObject(ref(storage,m.path)).catch(()=>{})}await deleteDoc(doc(db,'gallery',id));if(editingGalleryId===id)galleryFormReset();await renderGallery();toast('Gallery item deleted.')}catch(e){toast('Could not delete gallery item.',false)}}
+async function removeGalleryMedia(id,index){const s=await getDoc(doc(db,'gallery',id));if(!s.exists())return;const media=s.data().media||[];const item=media[index];if(!item||!confirm('Remove this media?'))return;try{media.splice(index,1);await updateDoc(doc(db,'gallery',id),{media,updatedAt:serverTimestamp()});await editGallery(id);await renderGallery();toast('Gallery media removed.')}catch(e){toast('Could not remove media.',false)}}
+async function deleteGallery(id){const s=await getDoc(doc(db,'gallery',id));if(!s.exists())return;if(!confirm('Delete this gallery item and all its photos/videos?'))return;try{await deleteDoc(doc(db,'gallery',id));if(editingGalleryId===id)galleryFormReset();await renderGallery();toast('Gallery item deleted.')}catch(e){toast('Could not delete gallery item.',false)}}
