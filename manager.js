@@ -13,8 +13,8 @@ const firebaseConfig = {
 };
 
 // FREE MEDIA HOSTING: Cloudinary (Firebase Storage is not used)
-const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME";
-const CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET";
+const CLOUDINARY_CLOUD_NAME = "h5lsxybm";
+const CLOUDINARY_UPLOAD_PRESET = "ds bala ji interior";
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
 
 const app = initializeApp(firebaseConfig);
