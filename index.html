@@ -1,43 +1,29 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DS BALA JI INTERIOR</title>
-<link rel="stylesheet" href="style.css">
-</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DS BALA JI INTERIOR</title><link rel="stylesheet" href="style.css"></head>
 <body>
-<header class="public-header">
-  <div class="brand"><span class="ds">DS</span><span><b>DS BALA JI</b><strong>INTERIOR</strong><small>FURNITURE | CIVIL WORK | PAINTING | INTERIOR SOLUTIONS</small></span></div>
-  <nav><a href="index.html">Home</a><a href="index.html#services">Services</a><a href="index.html#gallery">Gallery</a><a href="index.html#enquiry">Contact</a></nav>
-  <a class="manager-link" href="manager.html">Manager Login</a>
-</header>
-
-<section class="hero">
-  <div class="hero-bg"></div><div class="hero-overlay"></div>
-  <div class="hero-content">
-    <p>INTERIOR DESIGN & EXECUTION</p>
-    <h1>Make room for<br><em>better living.</em></h1>
-    <div class="actions"><a href="#services">Explore Services</a><a class="light" href="#enquiry">Get a Quote →</a></div>
-  </div>
-</section>
-
+<header class="public-header"><div class="brand"><span class="ds">DS</span><span><b>DS BALA JI</b><strong>INTERIOR</strong><small>FURNITURE | CIVIL WORK | PAINTING | INTERIOR SOLUTIONS</small></span></div><nav><a href="#home">Home</a><a href="#services">Services</a><a href="#gallery">Gallery</a><a href="#enquiry">Contact</a></nav><a class="manager-link" href="manager.html">Manager Login</a></header>
+<section id="home" class="hero"><div class="hero-bg"></div><div class="hero-overlay"></div><div class="hero-content"><p>INTERIOR DESIGN & EXECUTION</p><h1>Make room for<br><em>better living.</em></h1><div class="actions"><a href="#services">Explore Services</a><a class="light" href="#enquiry">Get a Quote →</a></div></div></section>
 <section class="intro"><div><small>DS BALA JI INTERIOR</small><h2>Complete interior solutions<br><em>under one roof.</em></h2></div><p>Furniture, civil work, painting and complete interior execution for homes, offices and commercial spaces.</p></section>
-
-<section id="services" class="services"><p>WHAT WE DO</p><h2>Our Services</h2><div class="cards">
-  <article><b>01</b><h3>Furniture & Woodwork</h3><p>Custom furniture, wardrobes, cabinets and storage solutions.</p></article>
-  <article><b>02</b><h3>Civil Work</h3><p>Partitions, preparation and interior finishing work.</p></article>
-  <article><b>03</b><h3>Painting & Finishing</h3><p>Clean, professional painting and finishing for your space.</p></article>
-  <article><b>04</b><h3>Interior Solutions</h3><p>Complete planning and execution from start to finish.</p></article>
-</div></section>
-
-<section id="gallery" class="gallery"><p>PROJECT INSPIRATION</p><h2>Interior Gallery</h2><div class="photos">
-  <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=85" alt="Living room">
-  <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=85" alt="Modern interior">
-  <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1000&q=85" alt="Home interior">
-</div><small>Replace these inspiration images with your own completed-project photographs before publishing them as company work.</small></section>
-
-<section id="enquiry" class="enquiry"><div><p>CONTACT</p><h2>Discuss your project.</h2><p>Call or WhatsApp us for furniture, civil work, painting or complete interior solutions.</p><a class="whatsapp" href="https://wa.me/917700064259?text=Hello%20DS%20BALA%20JI%20INTERIOR%2C%20I%20want%20to%20discuss%20a%20project." target="_blank">WhatsApp Us</a></div>
-<div class="contact"><a href="tel:+917700064259">+91 77000 64259</a><a href="tel:+917039534665">+91 70395 34665</a><a href="mailto:dileepsharma21559@gmail.com">dileepsharma21559@gmail.com</a></div></section>
-
-<footer>© 2026 DS BALA JI INTERIOR <span>•</span> Public Website</footer>
-</body></html>
+<section id="services" class="services"><p>WHAT WE DO</p><h2>Our Services</h2><div id="publicServiceCards" class="cards"></div><div id="serviceProjects" class="service-projects"></div></section>
+<section id="gallery" class="gallery"><p>PROJECT INSPIRATION</p><h2>Interior Gallery</h2><div id="publicGallery" class="photos"><div class="public-loading">Loading gallery...</div></div><small>Photos and videos uploaded by the manager will appear here.</small></section>
+<section id="enquiry" class="enquiry"><div><p>CONTACT</p><h2>Discuss your project.</h2><p>Call or WhatsApp us for furniture, civil work, painting or complete interior solutions.</p><a class="whatsapp" href="https://wa.me/917700064259?text=Hello%20DS%20BALA%20JI%20INTERIOR%2C%20I%20want%20to%20discuss%20a%20project." target="_blank">WhatsApp Us</a></div><div class="contact"><a href="tel:+917700064259">+91 77000 64259</a><a href="tel:+917039534665">+91 70395 34665</a><a href="mailto:dileepsharma21559@gmail.com">dileepsharma21559@gmail.com</a></div></section><footer>© 2026 DS BALA JI INTERIOR <span>•</span> Public Website</footer>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js';
+import {getFirestore,collection,getDocs} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js';
+const app=initializeApp({apiKey:'AIzaSyCf9-h9Pofvtdldbi4ID7q-AELzo19fL7E',authDomain:'ds-bala-ji-interior.firebaseapp.com',projectId:'ds-bala-ji-interior',storageBucket:'ds-bala-ji-interior.firebasestorage.app',messagingSenderId:'564291814619',appId:'1:564291814619:web:ce649d7bdffb63e4e9f8fe',measurementId:'G-V9D8D04SRD'});
+const db=getFirestore(app);
+const services=[{key:'furniture',number:'01',name:'Furniture & Woodwork',desc:'Custom furniture, wardrobes, cabinets and storage solutions.'},{key:'civil',number:'02',name:'Civil Work',desc:'Partitions, preparation and interior finishing work.'},{key:'painting',number:'03',name:'Painting & Finishing',desc:'Clean, professional painting and finishing for your space.'},{key:'interior',number:'04',name:'Interior Solutions',desc:'Complete planning and execution from start to finish.'}];
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+function renderServices(projects){
+ document.querySelector('#publicServiceCards').innerHTML=services.map(s=>`<article class="service-card" data-service="${s.key}"><b>${s.number}</b><h3>${s.name}</h3><p>${s.desc}</p><span class="view-service">View projects →</span></article>`).join('');
+ const grouped={};services.forEach(s=>grouped[s.key]=[]);projects.forEach(p=>{if(grouped[p.serviceKey])grouped[p.serviceKey].push(p)});
+ document.querySelector('#serviceProjects').innerHTML=services.map(s=>{const list=grouped[s.key]||[];return `<div class="service-detail" id="service-${s.key}"><div class="detail-head"><div><span>${s.number}</span><h3>${s.name}</h3></div><button class="close-detail" type="button">Close ×</button></div>${list.length?`<div class="project-grid">${list.map(projectHtml).join('')}</div>`:'<p class="no-projects">Projects will be added here by the manager.</p>'}</div>`}).join('');
+ document.querySelectorAll('.service-card').forEach(card=>card.onclick=()=>{document.querySelectorAll('.service-detail').forEach(x=>x.classList.remove('open'));document.querySelector('#service-'+card.dataset.service).classList.add('open');document.querySelector('#service-'+card.dataset.service).scrollIntoView({behavior:'smooth',block:'start'})});
+ document.querySelectorAll('.close-detail').forEach(b=>b.onclick=()=>b.closest('.service-detail').classList.remove('open'));
+}
+function projectHtml(p){const media=p.media||[];return `<article class="public-project"><div class="project-media">${media.length?media.map(m=>m.type==='video'?`<video src="${m.url}" controls preload="metadata"></video>`:`<img src="${m.url}" alt="${esc(p.name)}">`).join(''):'<div class="no-media">No photo/video yet</div>'}</div><div class="project-info"><h4>${esc(p.name)}</h4><p>${esc(p.description||'')}</p></div></article>`}
+function galleryHtml(g){const media=g.media||[];return `<article class="public-gallery-item"><div class="gallery-media">${media.map(m=>m.type==='video'?`<video src="${m.url}" controls preload="metadata"></video>`:`<img src="${m.url}" alt="${esc(g.title||'DS BALA JI INTERIOR')}">`).join('')}</div><div class="gallery-info"><h4>${esc(g.title||'DS BALA JI INTERIOR')}</h4><p>${esc(g.description||'')}</p></div></article>`}
+async function loadPublicContent(){try{const ps=await getDocs(collection(db,'projects'));const projects=[];ps.forEach(d=>projects.push({id:d.id,...d.data()}));renderServices(projects);const gs=await getDocs(collection(db,'gallery'));const gallery=[];gs.forEach(d=>gallery.push({id:d.id,...d.data()}));document.querySelector('#publicGallery').innerHTML=gallery.length?gallery.map(galleryHtml).join(''):`<div class="public-loading">Gallery photos and videos will appear here.</div>`}catch(e){console.error(e);renderServices([]);document.querySelector('#publicGallery').innerHTML='<div class="public-loading">Gallery is being updated. Please check again soon.</div>'}}
+loadPublicContent();
+</script></body></html>
